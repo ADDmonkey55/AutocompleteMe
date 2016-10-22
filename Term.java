@@ -7,21 +7,21 @@ public class Term implements Comparable<Term> {
 	/////////////////////////////////////////////////////////////
 	// fields
 	private String query;
-	private Double weight;
+	private double weight;
 
 	/////////////////////////////////////////////////////////////
 	// public methods
 
 	// Initialize a term with the given query string and weight.
 	public Term(String query, double weight) {
+		// make sure not null or negative weight
 		if (query == null)
 			throw new NullPointerException();
 		if (weight < 0)
 			throw new IllegalArgumentException();
-
+		// initialize fields
 		this.query = query;
 		this.weight = weight;
-
 	}
 
 	// Compare the terms in descending order by weight.
@@ -51,6 +51,13 @@ public class Term implements Comparable<Term> {
 	/////////////////////////////////////////////////////////////
 	// private methods
 
+	private static String firstFewLettersOf(String s, int r) {
+		// if r > length of string, DO NOT substring
+		if (r <= s.length())
+			return s.substring(0, r);
+		return s;
+	}
+
 	/////////////////////////////////////////////////////////////
 	// private classes
 
@@ -59,14 +66,15 @@ public class Term implements Comparable<Term> {
 		@Override
 		public int compare(Term a, Term b) {
 
-			return b.weight.compareTo(a.weight);
-			// double cmp = b.weight - a.weight;
-			// if (cmp < 0)
-			// return -1;
-			// else if (cmp > 0)
-			// return 1;
-			// else
-			// return 0;
+			//return b.weight.compareTo(a.weight);
+			//I decided not to use the above line since making weight a Double would take up memory
+			double cmp = b.weight - a.weight;
+			if (cmp < 0)
+				return -1;
+			else if (cmp > 0)
+				return 1;
+			else
+				return 0;
 			// return (int)(b.weight - a.weight); This wouldn't work since
 			// differences > 0 and < 1 would get truncated to 0
 		}
@@ -84,8 +92,9 @@ public class Term implements Comparable<Term> {
 
 		@Override
 		public int compare(Term a, Term b) {
-			String s1 = a.query.substring(0, r);
-			String s2 = b.query.substring(0, r);
+			String s1 = firstFewLettersOf(a.query, r);
+			String s2 = firstFewLettersOf(b.query, r);
+
 			return s1.compareTo(s2);
 		}
 
@@ -95,11 +104,12 @@ public class Term implements Comparable<Term> {
 	// main method for testing
 
 	public static void main(String[] args) {
-		double a = 1;
-		double b = .999999999999;
-		double c = a - b;
-		System.out.println(c + " -> " + (int) c);
-
+		String s = "test String";
+		Term test = new Term(s, 5);
+		System.out.println(test);
+		
+		s = "changed String";
+		System.out.println(test);
 	}
 
 }
