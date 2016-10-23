@@ -20,10 +20,8 @@ public class Autocomplete {
 		checkForNull(terms, "Array of terms is null");
 		this.terms = terms.clone();
 
+		//sort our array
 		Arrays.sort(this.terms);
-		// TODO remove next 2 lines
-		System.out.println("orderred Terms:");
-		printArray(this.terms);
 	}
 
 	// Return all terms that start with the given prefix, in descending order of
@@ -35,29 +33,29 @@ public class Autocomplete {
 		Term p = new Term(prefix, 0);
 		// find the first and last index of terms that start w/ the prefx
 		int first = BinarySearchDeluxe.firstIndexOf(terms, p, Term.byPrefixOrder(prefix.length()));
+		if (first == -1) // if there are no matches
+			return new Term[0];
 		int last = BinarySearchDeluxe.lastIndexOf(terms, p, Term.byPrefixOrder(prefix.length()));
 		// create an array of those terms w/ the prefix
 		Term[] range = Arrays.copyOfRange(terms, first, last + 1);
 		// sort range by weight
 		Arrays.sort(range, Term.byReverseWeightOrder());
-		// TODO remove next 3 lines
-		System.out.println("Binary search results: " + first + " " + last);
-		System.out.println("Orderred temrs:");
-		printArray(range);
 		return range;
 	}
 
 	// Return the number of terms that start with the given prefix.
 	public int numberOfMatches(String prefix) {
-		// starts off the same way as allMatches(), stops after first and last is found
+		// starts off the same way as allMatches(), stops after first and last
+		// is found
 		checkForNull(prefix, "prefix is null");
 		// create a temporary Term to hold the prefix so it can be compared to
 		// other Terms
 		Term p = new Term(prefix, 0);
 		// find the first and last index of terms that start w/ the prefx
 		int first = BinarySearchDeluxe.firstIndexOf(terms, p, Term.byPrefixOrder(prefix.length()));
+		if (first == -1) // if there are no matches
+			return 0;
 		int last = BinarySearchDeluxe.lastIndexOf(terms, p, Term.byPrefixOrder(prefix.length()));
-
 		return last - first + 1;
 	}
 
@@ -78,6 +76,7 @@ public class Autocomplete {
 		String input;
 		List<Term> list = new LinkedList<>();
 		Term[] array;
+		Term[] range;
 		Autocomplete a;
 
 		// create list of terms from user
@@ -88,24 +87,28 @@ public class Autocomplete {
 				break;
 			list.add(new Term(input, StdIn.readDouble()));
 		}
+		list.add(new Term("", 3));
 
 		// convert list into an array
 		array = new Term[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
 		}
+		printArray(array);
 
 		// get prefix
 		System.out.print("prefix: ");
 		String prefix = StdIn.readString();
 		a = new Autocomplete(array);
-		a.allMatches(prefix);
+		range = a.allMatches(prefix);
+		printArray(range);
 
 	}
 
-	public static void printArray(Term[] a) {
+	//main method uses this guy
+	private static void printArray(Term[] a) {
 		for (int i = 0; i < a.length; i++) {
-			System.out.println(i + "\t" + a[i]);
+			System.out.println(i + ":\t" + a[i]);
 		}
 	}
 
